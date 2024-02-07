@@ -16,6 +16,7 @@ const PrimaryButton = (props) => {
           variant="contained"
           aria-label="outlined primary button group"
           size="medium"
+          onClick={(eve)=>props.onClick(eve) }
         >
           {props.children}
         </Button>
