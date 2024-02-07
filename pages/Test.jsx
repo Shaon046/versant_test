@@ -3,8 +3,8 @@ import styled from "styled-components";
 import McqTest from "./components/McqTest";
 import VoiceTest from "./components/Voicetest";
 import NavBar from "./components/NavBar";
-import Timer from "./components/Timer";
 import StartTest from "./components/StartTest";
+import { useSelector } from "react-redux";
 
 const MainContainer = styled.div`
   height: 100vh;
@@ -13,21 +13,17 @@ const MainContainer = styled.div`
 `;
 
 const Test = () => {
+  //hooks
+  const started = useSelector((state) => state.test.started);
+
   return (
     <>
       <MainContainer>
         <NavBar />
-        {/* <div>
-        <StartTest />
-        </div> */}
-        
 
-               
-       <div>
-       
-          <McqTest />
-       </div>
-           
+        {!started && <StartTest />}
+
+        {started && <McqTest />}
 
         {/* 
            <VoiceTest />

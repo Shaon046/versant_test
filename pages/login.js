@@ -1,11 +1,17 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import styled from "styled-components";
-import { FormGroup, TextField } from "@mui/material";
+import {
+  FormGroup,
+  TextField,
+  IconButton,
+  InputAdornment,
+  FormHelperText,
+} from "@mui/material";
 import PrimaryButton from "./components/PrimaryButton";
-import { IconButton, InputAdornment, FormHelperText } from "@mui/material";
 import { Visibility, VisibilityOff } from "@mui/icons-material";
 import { useDispatch } from "react-redux";
 import { setAuth } from "../redux/authSlice";
+import { useRouter } from "next/router";
 
 const MainContainer = styled.div`
   height: 100vh;
@@ -29,24 +35,24 @@ const FormContainer = styled.div`
 `;
 
 const Main = () => {
-  //dispatch function
+  //Hooks
   const dispatch = useDispatch();
+  const router = useRouter();
 
-  //states
-  const [userDetails, setUserDetails] = useState({});
+  // states{
+  const [userInput, setUserInput] = useState({});
 
   const [showPassword, setShowPassword] = useState(false);
-
-  const [buttonActive, setButtonActive] = useState();
-
   const [isRequired, setIsRequired] = useState({});
   const [inputLengthCheck, setInputLengthCheck] = useState({});
+  const [isDisabled, setIsDisabled] = useState(false);
+  // }states
 
   //input onchange handler function
   const inputOnChange = (eve) => {
     const { name, value } = eve.target;
-    setUserDetails((prevUserDetails) => ({
-      ...prevUserDetails,
+    setUserInput((prevuserInput) => ({
+      ...prevuserInput,
       [name]: value,
     }));
   };
@@ -55,15 +61,21 @@ const Main = () => {
   const onInputBlur = (eve) => {
     const { name, value } = eve.target;
 
-    if (!userDetails.user_id || userDetails.user_id.trim() === "") {
+    if (
+      (name === "user_id" && !userInput.user_id) ||
+      userInput.user_id === ""
+    ) {
       setIsRequired((prevState) => ({ ...prevState, user_id: true }));
-    } else {
+    } else if (name === "user_id" && userInput.user_id !== "") {
       setIsRequired((prevState) => ({ ...prevState, user_id: false }));
     }
 
-    if (!userDetails.password || userDetails.password.trim() === "") {
+    if (
+      (name === "password" && !userInput.password) ||
+      userInput.password === ""
+    ) {
       setIsRequired((prevState) => ({ ...prevState, password: true }));
-    } else {
+    } else if (name === "password" && userInput.password !== "") {
       setIsRequired((prevState) => ({ ...prevState, password: false }));
     }
 
@@ -97,14 +109,35 @@ const Main = () => {
     }
   };
 
-  // Toggle password visibility
+  // Toggle password visibility handler function
   const togglePasswordVisibility = () => {
     setShowPassword((prevShowPassword) => !prevShowPassword);
   };
 
-  //loging logic
+  //loging logic  handler function
+
+  // const loginValidation=()=>{
+  //   if (
+  //     (!userInput.user_id && !userInput.password) ||
+  //     isRequired.user_id ||
+  //     inputLengthCheck.user_id ||
+  //     isRequired.password ||
+  //     inputLengthCheck.password
+  //   ) {
+  //     setIsDisabled((prevState)=>prevState=true);
+  //     console.log("galat hain");
+  //   } else {
+  //     setIsDisabled((prevState)=>prevState=false);
+  //     console.log("shai hain 🕺");
+  //   }
+  // }
+
   const onLoginHandler = () => {
     dispatch(setAuth(true));
+    ////validation:
+    // loginValidation()
+
+    router.push("/Test");
   };
 
   return (
@@ -126,12 +159,12 @@ const Main = () => {
           />
           {isRequired.user_id && (
             <FormHelperText sx={{ ml: 1, color: "red" }}>
-              Username is required
+              User Id is required
             </FormHelperText>
           )}
           {inputLengthCheck.user_id && (
             <FormHelperText sx={{ ml: 1, color: "red" }}>
-              Username must be at least 5 characters long
+              User Id must be at least 4 characters long
             </FormHelperText>
           )}
 

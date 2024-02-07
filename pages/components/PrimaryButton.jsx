@@ -8,7 +8,7 @@ const ButtonContainer = styled.div`
   margin-top: 10px;
 `;
 
-const PrimaryButton = (props) => {
+const PrimaryButton = ({onClick,disabled,children}) => {
   return (
     <>
       <ButtonContainer>
@@ -16,9 +16,10 @@ const PrimaryButton = (props) => {
           variant="contained"
           aria-label="outlined primary button group"
           size="medium"
-          onClick={(eve)=>props.onClick(eve) }
+          onClick={(eve)=>onClick(eve) }
+          disabled={disabled}
         >
-          {props.children}
+          {children}
         </Button>
       </ButtonContainer>
     </>

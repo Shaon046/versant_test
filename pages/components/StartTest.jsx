@@ -1,7 +1,9 @@
 import React from "react";
 import styled from "styled-components";
 import PrimaryButton from "./PrimaryButton";
+import { useDispatch ,useSelector} from "react-redux";
 
+import { setStart } from "../../redux/testSlice";
 const Container = styled.div`
   display: flex;
   flex-direction: column;
@@ -26,8 +28,15 @@ const MessageTwo = styled.p`
 `;
 
 const StartTest = () => {
+  //hooks
+  const dispatch = useDispatch();
+
+
+
+
   const onReadyHandler = () => {
-    console.log(first);
+    dispatch(setStart());
+    console.log("CLICKED");
   };
 
   return (
@@ -44,13 +53,7 @@ const StartTest = () => {
         }
       </MessageTwo>
 
-      <PrimaryButton
-        OnClick={() => {
-          onReadyHandler();
-        }}
-      >
-        ready
-      </PrimaryButton>
+      <PrimaryButton onClick={onReadyHandler}>ready</PrimaryButton>
     </Container>
   );
 };
