@@ -1,62 +1,76 @@
-import React, { useState } from "react";
-import Radio from "@mui/material/Radio";
-import RadioGroup from "@mui/material/RadioGroup";
-import FormControlLabel from "@mui/material/FormControlLabel";
-import FormControl from "@mui/material/FormControl";
-import FormLabel from "@mui/material/FormLabel";
-import styled from "styled-components";
-import { keyframes } from "styled-components";
-import PrimaryButton from "./PrimaryButton";
-
-const MainContainer = styled.div`
-  width: 100%;
-  max-width: 650px;
-  margin: 0 auto;
-  background: #7e7a7a;
-  border: 1px solid var(--main-border-color);
-  background-color: var(--main-primary-color);
-  padding: 20px;
-
-  @media (max-width: 768px) {
-    padding: 15px;
-    font-size: 0.9rem;
-  }
-`;
-const QuestionConatiner = styled.p`
-  text-align: left;
-  padding: 20px 0 20px 0;
-`;
-
-
-
+import React, { useState, useEffect, useRef } from "react";
 
 const VoiceTest = () => {
-  const dummy =
-    "Loasrem ipsum dolor sit, amet consectetur adipisicing elit. Ipsum, amet.";
+  const [isRecording, setIsRecording] = useState(false);
+  const [audioUrl, setAudioUrl] = useState(null);
+  const mediaRecorder = useRef(null);
+  const chunks = useRef([]);
 
+  useEffect(() => {
+    if (isRecording) {
+      let stream;
 
+      navigator.mediaDevices.getUserMedia({ audio: true }).then((recordedStream) => {
+          stream = recordedStream;
+          mediaRecorder.current = new MediaRecorder(stream);
 
-    const [isRecording, setIsRecording] = useState(false);
+          mediaRecorder.current.ondataavailable = (e) => {
+            if (e.data.size > 0) {
+              chunks.current.push(e.data);
+            }
+          };
 
-    const handleRecordClick = () => {
-      setIsRecording((prevState) => !prevState);
-    };
+          mediaRecorder.current.onstop = () => {
+            const blob = new Blob(chunks.current, { type: "audio/wav" });
+            setAudioUrl(URL.createObjectURL(blob)); // Set audioUrl to the Blob URL
+            chunks.current = [];
+          };
 
+          mediaRecorder.current.start();
+        })
+        .catch((error) => {
+          if (
+            error.name === "NotAllowedError" ||
+            error.name === "PermissionDeniedError"
+          ) {
+            const allowPermission = window.confirm(
+              "Microphone access is required for recording. Please enable microphone access in your browser settings and try again."
+            );
+            if (allowPermission) {
+              console.log(
+                "User denied microphone access. Provide instructions for enabling microphone access in browser settings."
+              );
+            }
+          } else {
+            console.error("Error accessing microphone:", error);
+          }
+        });
+    } else if (mediaRecorder.current) {
+      mediaRecorder.current.stop();
+      mediaRecorder.current = null;
+    }
+  }, [isRecording]);
+
+  const handleStartRecording = () => {
+    setIsRecording(true);
+  };
+
+  const handleStopRecording = () => {
+    setIsRecording(false);
+  };
 
   return (
-    <>
-      <MainContainer>
-        <QuestionConatiner>{"1." + dummy}</QuestionConatiner>
-
-       
-
-        <div style={{ padding: "40px" }}>
-          {" "}
-          <PrimaryButton>Submit</PrimaryButton>  
-        </div>
-
-      </MainContainer>
-    </>
+    <div>
+      <h1>Voice Recorder</h1>
+      {!isRecording ? (
+        <button onClick={handleStartRecording}>Start Recording</button>
+      ) : (
+        <button onClick={handleStopRecording}>Stop Recording</button>
+      )}
+      {audioUrl && (
+        <audio controls src={audioUrl}></audio>
+      )}
+    </div>
   );
 };
 

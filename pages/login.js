@@ -46,6 +46,7 @@ const Main = () => {
   const [isRequired, setIsRequired] = useState({});
   const [inputLengthCheck, setInputLengthCheck] = useState({});
   const [isDisabled, setIsDisabled] = useState(false);
+
   // }states
 
   //input onchange handler function
@@ -58,6 +59,15 @@ const Main = () => {
   };
 
   //input blur handler function && input required validation
+
+  // const inputValidation = () => {
+  //   const isUserInputEmpty = !userInput.user_id || !userInput.password;
+  //   const isUserIdRequired = isRequired.user_id || inputLengthCheck.user_id;
+  //   const isPasswordRequired = isRequired.password || inputLengthCheck.password;
+
+  //   setIsDisabled(isUserInputEmpty || isUserIdRequired || isPasswordRequired);
+  // };
+
   const onInputBlur = (eve) => {
     const { name, value } = eve.target;
 
@@ -107,6 +117,8 @@ const Main = () => {
         }));
       }
     }
+
+    inputValidation();
   };
 
   // Toggle password visibility handler function
@@ -114,28 +126,11 @@ const Main = () => {
     setShowPassword((prevShowPassword) => !prevShowPassword);
   };
 
-  //loging logic  handler function
-
-  // const loginValidation=()=>{
-  //   if (
-  //     (!userInput.user_id && !userInput.password) ||
-  //     isRequired.user_id ||
-  //     inputLengthCheck.user_id ||
-  //     isRequired.password ||
-  //     inputLengthCheck.password
-  //   ) {
-  //     setIsDisabled((prevState)=>prevState=true);
-  //     console.log("galat hain");
-  //   } else {
-  //     setIsDisabled((prevState)=>prevState=false);
-  //     console.log("shai hain 🕺");
-  //   }
-  // }
+  ////loging logic  handler function
 
   const onLoginHandler = () => {
     dispatch(setAuth(true));
     ////validation:
-    // loginValidation()
 
     router.push("/Test");
   };
@@ -203,7 +198,9 @@ const Main = () => {
           )}
         </FormGroup>
 
-        <PrimaryButton onClick={onLoginHandler}>Login</PrimaryButton>
+        <PrimaryButton onClick={onLoginHandler} >
+          Login
+        </PrimaryButton>
       </FormContainer>
     </MainContainer>
   );

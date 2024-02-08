@@ -1,7 +1,7 @@
 import React from "react";
 import styled from "styled-components";
 import PrimaryButton from "./PrimaryButton";
-import { useDispatch ,useSelector} from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 
 import { setStart } from "../../redux/testSlice";
 const Container = styled.div`
@@ -30,9 +30,6 @@ const MessageTwo = styled.p`
 const StartTest = () => {
   //hooks
   const dispatch = useDispatch();
-
-
-
 
   const onReadyHandler = () => {
     dispatch(setStart());
