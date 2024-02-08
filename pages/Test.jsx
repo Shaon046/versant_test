@@ -25,12 +25,7 @@ const Test = () => {
 
         {started && <McqTest />} */}
 
-      
-           <VoiceTest />
-       
-
-{/* <AudioSpeech/> */}
-
+        <VoiceTest />
       </MainContainer>
     </>
   );

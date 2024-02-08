@@ -1,10 +1,8 @@
 import React, { useState, useEffect, useRef } from "react";
-import { useSpeechSynthesis } from "react-speech-kit";
 import styled from "styled-components";
 import Button from "@mui/material/Button";
 import Timer from "./Timer";
 const MainContainer = styled.div`
-
   max-width: 650px;
   margin: 20px auto;
   background: #6f0000;
@@ -24,7 +22,8 @@ const MainContainer = styled.div`
 
   @media (min-width: 1200px) {
     max-width: 650px;
-  }`
+  }
+`;
 
 const QuestionConatiner = styled.p`
   text-align: left;
@@ -40,24 +39,21 @@ const QuestionConatiner = styled.p`
   }
 `;
 
-const RecorderContainer=styled.div`
-height: 220px;
-display: flex;
-flex-direction: column;
-justify-content: space-between;
-align-items: center;
-padding: 20px;
-
-  
-`
-
-
+const RecorderContainer = styled.div`
+  height: 220px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  align-items: center;
+  padding: 20px;
+`;
 
 const VoiceTest = () => {
+  const texts = " 1. If Peter Piper picked a peck of pickled peppers. ";
+  const [question, setQuestion] = useState(texts);
 
-
-const texts =" 1. If Peter Piper picked a peck of pickled peppers. ";
-const [question,setQuestion]=useState(texts)
+  const [stoped, setStoped] = useState(false);
+  const [timer, setTimer] = useState(500);
 
   const [isRecording, setIsRecording] = useState(false);
   const [audioUrl, setAudioUrl] = useState(null);
@@ -65,20 +61,19 @@ const [question,setQuestion]=useState(texts)
   const mediaRecorder = useRef(null);
   const chunks = useRef([]);
 
-  const { speak } = useSpeechSynthesis();
   const autoSpeechQuestion = () => {
-    speak({ text: question });
+    const utterance = new SpeechSynthesisUtterance(question);
+    speechSynthesis.speak(utterance);
+
+    utterance.onend = () => {
+      handleStartRecording();
+      console.log("khatam baat");
+    };
   };
-  
+
   useEffect(() => {
     autoSpeechQuestion();
   }, [question]);
-  
-
-
-
-
-
 
   useEffect(() => {
     if (isRecording) {
@@ -97,7 +92,7 @@ const [question,setQuestion]=useState(texts)
           };
 
           mediaRecorder.current.onstop = () => {
-            const blob = new Blob(chunks.current, { type: "audio/wav" });
+            const blob = new Blob(chunks.current, { type: "audio/mp3" });
             setAudioUrl(URL.createObjectURL(blob)); // Set audioUrl to the Blob URL
             chunks.current = [];
           };
@@ -129,53 +124,57 @@ const [question,setQuestion]=useState(texts)
 
   const handleStartRecording = () => {
     setIsRecording(true);
-   
   };
 
   const handleStopRecording = () => {
+    setTimer(0);
+    //setStoped(true);
+
     setIsRecording(false);
   };
 
+  console.log(timer);
+
   return (
     <MainContainer>
-<QuestionConatiner>{question}</QuestionConatiner>
+      <QuestionConatiner>{question}</QuestionConatiner>
 
-<RecorderContainer>
-<Timer initialDuration={300}/>
-{!isRecording ? (
-  <Button
-    variant="contained"
-    href="#contained-buttons"
-    style={{
-      borderRadius: "100px",
-      height: "60px",
-      width: "60px",
-      fontSize: "10px",
-    }}
-    onClick={handleStartRecording}
-  >
-    start
-  </Button>
-) : (
-  <Button
-    variant="contained"
-    href="#contained-buttons"
-    color="error"
-    style={{
-      borderRadius: "10px",
-      height: "60px",
-      width: "60px",
-      fontSize: "10px",
-    }}
-    onClick={handleStopRecording}
-  >
-    stop
-  </Button>
-)}
+      <RecorderContainer>
+        <Timer initialDuration={timer} />
+        {!isRecording ? (
+          <Button
+            variant="contained"
+            href="#contained-buttons"
+            style={{
+              borderRadius: "100px",
+              height: "60px",
+              width: "60px",
+              fontSize: "10px",
+            }}
+            onClick={handleStartRecording}
+          >
+            start
+          </Button>
+        ) : (
+          <Button
+            variant="contained"
+            href="#contained-buttons"
+            color="error"
+            style={{
+              borderRadius: "10px",
+              height: "60px",
+              width: "60px",
+              fontSize: "10px",
+            }}
+            onClick={() => handleStopRecording()}
+            disabled={stoped}
+          >
+            stop
+          </Button>
+        )}
 
-{ <audio controls src={audioUrl}></audio>}
-</RecorderContainer>
-      
+        {<audio controls src={audioUrl}></audio>}
+      </RecorderContainer>
     </MainContainer>
   );
 };
