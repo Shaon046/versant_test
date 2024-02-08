@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 import styled from "styled-components";
 
 const TimerDiv = styled.div`
-  position: absolute;
+  /* position: absolute; */
 
   display: flex;
   align-items: center;
@@ -12,7 +12,7 @@ const TimerDiv = styled.div`
   border: 1px solid var(--main-border-color);
   border-radius: 4px;
 
-  @media (max-width: 767px) {
+  /* @media (max-width: 767px) {
     position: absolute;
 
     left: 50%;
@@ -26,7 +26,7 @@ const TimerDiv = styled.div`
   }
   @media (min-width: 1200px) {
     left: 85%;
-  }
+  } */
 `;
 
 const Timer = ({ initialDuration }) => {
