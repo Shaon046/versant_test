@@ -7,6 +7,7 @@ import { collection, addDoc } from "firebase/firestore";
 import { useSelector } from "react-redux";
 import { useDispatch } from "react-redux";
 import { setTestStarted } from "../../redux/testSlice";
+import SettingsVoiceIcon from "@mui/icons-material/SettingsVoice";
 
 const MainContainer = styled.div`
   max-width: 650px;
@@ -35,7 +36,7 @@ const MainContainer = styled.div`
 
 const QuestionConatiner = styled.p`
   text-align: left;
-  padding: 20px 0 20px 0;
+  padding: 20px 5px 20px 5px;
   font-weight: 500;
   font-size: 1.2rem;
   background-color: var(--main-border-color);
@@ -91,10 +92,38 @@ const Waves = styled.div`
   animation: ${waveAnimation} 6s linear infinite;
 `;
 
+const zoomAnimation = keyframes`
+  0% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.1);
+  }
+  100% {
+    transform: scale(1.2);
+  }
+`;
+
+const LogoContainer = styled.div`
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 70px;
+  width: 70px;
+  border: 1px solid ${({ started }) => (started === true ? "red" : "gray")};
+  border-radius: 100px;
+`;
+
+const ZoomIcon = styled(SettingsVoiceIcon)`
+  &.zoom {
+    animation: ${zoomAnimation} 2s infinite alternate-reverse;
+  }
+`;
+
 const VoiceTest = () => {
   const dispatch = useDispatch();
 
-  const texts = " 1.What is JavaScript ? ";
+  const texts = " what is JavaScript and why should we use it ? ";
   const [question, setQuestion] = useState(texts);
 
   const [stoped, setStoped] = useState(false);
@@ -115,7 +144,8 @@ const VoiceTest = () => {
     speechSynthesis.speak(utterance);
 
     utterance.onend = () => {
-      handleStartRecording();
+     // handleStartRecording();
+      setIsRecording(true)
       dispatch(setTestStarted(true));
       console.log("recording started");
     };
@@ -203,11 +233,7 @@ const VoiceTest = () => {
     setIsRecording(true);
   };
 
-  const handleStopRecording = () => {
-    setTimer(0);
-    setStoped(true);
-    setIsRecording(false);
-  };
+ 
 
   /////stop recording
   useEffect(() => {
@@ -259,8 +285,28 @@ const VoiceTest = () => {
         )} */}
 
         {/* {<audio controls src={audio}></audio>} */}
-      </RecorderContainer>
 
+        {!isRecording && (
+          <>
+            <LogoContainer started={isRecording}>
+              <ZoomIcon style={{ color: "gray", fontSize: "35px" }} />
+            </LogoContainer>
+          </>
+        )}
+
+        {isRecording && (
+          <>
+            <LogoContainer>
+              <LogoContainer started={isRecording}>
+                <ZoomIcon
+                  style={{ color: "red", fontSize: "35px" }}
+                  className="zoom"
+                />
+              </LogoContainer>
+            </LogoContainer>
+          </>
+        )}
+      </RecorderContainer>
       {isRecording && (
         <StyledWaves>
           <Waves />
