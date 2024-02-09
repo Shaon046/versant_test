@@ -1,15 +1,23 @@
 import React, { useState, useEffect, useRef } from "react";
-import styled from "styled-components";
+import styled, { keyframes } from "styled-components";
 import Button from "@mui/material/Button";
 import Timer from "./Timer";
+import { db } from "../../firebaseConfig";
+import { collection, addDoc } from "firebase/firestore";
+import { useSelector } from "react-redux";
+import { useDispatch } from "react-redux";
+import { setTestStarted } from "../../redux/testSlice";
+
 const MainContainer = styled.div`
   max-width: 650px;
+
   margin: 20px auto;
   background: #6f0000;
   border: 1px solid var(--main-border-color);
   background-color: var(--main-primary-color);
   border-radius: 4px;
-
+  overflow: hidden;
+  box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
   @media (max-width: 767px) {
     margin-top: 40px;
     max-width: 400px;
@@ -40,7 +48,7 @@ const QuestionConatiner = styled.p`
 `;
 
 const RecorderContainer = styled.div`
-  height: 220px;
+  height: 200px;
   display: flex;
   flex-direction: column;
   justify-content: space-between;
@@ -48,33 +56,92 @@ const RecorderContainer = styled.div`
   padding: 20px;
 `;
 
+const waveAnimation = keyframes`
+  0% {
+    transform: translateX(0);
+  }
+  100% {
+    transform: translateX(-50%);
+  }
+`;
+
+const StyledWaves = styled.div`
+  height: 7px;
+  width: 100%;
+  overflow: hidden;
+`;
+
+const Waves = styled.div`
+  height: 100%;
+  width: 2000%;
+  background: linear-gradient(
+    to right,
+    #ff5733,
+    #ffc300,
+    #daf7a6,
+    #02d2cb,
+    #6117bb,
+    #ff33ab,
+    #33ff77,
+    #b317ff,
+    #ffb317,
+    #17ffb3,
+    #e033ff
+  );
+  animation: ${waveAnimation} 6s linear infinite;
+`;
+
 const VoiceTest = () => {
-  const texts = " 1. If Peter Piper picked a peck of pickled peppers. ";
+  const dispatch = useDispatch();
+
+  const texts = " 1.What is JavaScript ? ";
   const [question, setQuestion] = useState(texts);
 
   const [stoped, setStoped] = useState(false);
-  const [timer, setTimer] = useState(500);
+  const [timer, setTimer] = useState(15);
 
   const [isRecording, setIsRecording] = useState(false);
-  const [audioUrl, setAudioUrl] = useState(null);
+  const [audio, setAudio] = useState(null);
 
   const mediaRecorder = useRef(null);
   const chunks = useRef([]);
 
+  // useSelector
+  const { timeLeft } = useSelector((state) => state.test);
+
+  console.log(timeLeft);
   const autoSpeechQuestion = () => {
     const utterance = new SpeechSynthesisUtterance(question);
     speechSynthesis.speak(utterance);
 
     utterance.onend = () => {
       handleStartRecording();
-      console.log("khatam baat");
+      dispatch(setTestStarted(true));
+      console.log("recording started");
     };
   };
 
+  //// add data to db
+
+  const addDataToDb = async (data) => {
+    try {
+      const docRef = await addDoc(collection(db, "mp3"), {
+        audioFile: data,
+      });
+      console.log("data added", docRef.id);
+      return true;
+    } catch (err) {
+      console.log(err);
+      return false;
+    }
+  };
+
+  ////text to speech question
   useEffect(() => {
     autoSpeechQuestion();
   }, [question]);
 
+  ////record media and store to db
   useEffect(() => {
     if (isRecording) {
       let stream;
@@ -93,7 +160,17 @@ const VoiceTest = () => {
 
           mediaRecorder.current.onstop = () => {
             const blob = new Blob(chunks.current, { type: "audio/mp3" });
-            setAudioUrl(URL.createObjectURL(blob)); // Set audioUrl to the Blob URL
+            const reader = new FileReader();
+
+            reader.readAsDataURL(blob);
+            reader.onloadend = () => {
+              const base64 = reader.result;
+
+              if (base64 !== null || "") {
+                addDataToDb(base64);
+              }
+              setAudio(reader.result); ///for testing
+            };
             chunks.current = [];
           };
 
@@ -128,10 +205,18 @@ const VoiceTest = () => {
 
   const handleStopRecording = () => {
     setTimer(0);
-    //setStoped(true);
-
+    setStoped(true);
     setIsRecording(false);
   };
+
+  /////stop recording
+  useEffect(() => {
+    if (timeLeft === 0) {
+      setTimer(0);
+      setStoped(true);
+      setIsRecording(false);
+    }
+  }, [timeLeft]);
 
   console.log(timer);
 
@@ -141,7 +226,7 @@ const VoiceTest = () => {
 
       <RecorderContainer>
         <Timer initialDuration={timer} />
-        {!isRecording ? (
+        {/* {!isRecording ? (
           <Button
             variant="contained"
             href="#contained-buttons"
@@ -171,10 +256,16 @@ const VoiceTest = () => {
           >
             stop
           </Button>
-        )}
+        )} */}
 
-        {<audio controls src={audioUrl}></audio>}
+        {/* {<audio controls src={audio}></audio>} */}
       </RecorderContainer>
+
+      {isRecording && (
+        <StyledWaves>
+          <Waves />
+        </StyledWaves>
+      )}
     </MainContainer>
   );
 };

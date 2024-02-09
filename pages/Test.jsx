@@ -6,6 +6,8 @@ import NavBar from "./components/NavBar";
 import StartTest from "./components/StartTest";
 import { useSelector } from "react-redux";
 
+import Wave from "./components/Wave";
+
 const MainContainer = styled.div`
   height: 100vh;
   background-color: var(--main-bg-color);
@@ -25,7 +27,9 @@ const Test = () => {
 
         {started && <McqTest />} */}
 
-        <VoiceTest />
+        {!started && <StartTest />}
+
+        {started && <VoiceTest />}
       </MainContainer>
     </>
   );

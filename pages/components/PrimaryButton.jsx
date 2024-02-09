@@ -8,7 +8,7 @@ const ButtonContainer = styled.div`
   margin-top: 10px;
 `;
 
-const PrimaryButton = ({onClick,disabled,children}) => {
+const PrimaryButton = ({ onClick, disabled, children }) => {
   return (
     <>
       <ButtonContainer>
@@ -16,7 +16,7 @@ const PrimaryButton = ({onClick,disabled,children}) => {
           variant="contained"
           aria-label="outlined primary button group"
           size="medium"
-          onClick={(eve)=>onClick(eve) }
+          onClick={(eve) => onClick(eve)}
           disabled={disabled}
         >
           {children}
@@ -25,6 +25,5 @@ const PrimaryButton = ({onClick,disabled,children}) => {
     </>
   );
 };
-
 
 export default PrimaryButton;
