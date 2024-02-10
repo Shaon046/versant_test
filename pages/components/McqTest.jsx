@@ -101,15 +101,19 @@ const McqTest = () => {
 
   ////handler functions
   const onClickNextHandler = () => {
-    setCurrentIndex((prev) => prev + 1);
+    if (currentIndex < pageCount - 1) {
+      setCurrentIndex((prev) => prev + 1);
+    }
 
     console.log("calling");
   };
 
   const onClickPreviousHandler = () => {
-    setCurrentIndex((prev) => prev - 1);
+    if (currentIndex >= 1) {
+      setCurrentIndex((prev) => prev - 1);
 
-    console.log("calling");
+      console.log("calling");
+    }
   };
 
   useEffect(() => {
