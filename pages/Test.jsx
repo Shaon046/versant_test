@@ -22,13 +22,15 @@ const Test = () => {
       <MainContainer>
         <NavBar />
 
-        {/* {!started && <StartTest />}
-
-        {started && <McqTest />} */}
-
         {!started && <StartTest />}
 
-        {started && <VoiceTest />}
+        {started && <McqTest />}
+
+       {/* {!started && <StartTest />}
+
+        {started && <VoiceTest />}  */}
+
+
       </MainContainer>
     </>
   );

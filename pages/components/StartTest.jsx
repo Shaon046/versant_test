@@ -1,8 +1,7 @@
 import React from "react";
 import styled from "styled-components";
-import PrimaryButton from "./PrimaryButton";
 import { useDispatch, useSelector } from "react-redux";
-
+import { Button } from "@mui/material";
 import { setStart } from "../../redux/testSlice";
 const Container = styled.div`
   display: flex;
@@ -25,6 +24,12 @@ const MessageTwo = styled.p`
   text-align: center;
   font-size: medium;
   font-weight: 400;
+`;
+
+const ButtonContainer = styled.div`
+  display: flex;
+  justify-content: space-around;
+  margin-top: 10px;
 `;
 
 const StartTest = () => {
@@ -50,7 +55,16 @@ const StartTest = () => {
         }
       </MessageTwo>
 
-      <PrimaryButton onClick={onReadyHandler}>ready</PrimaryButton>
+      <ButtonContainer>
+        <Button
+          variant="contained"
+          aria-label="outlined primary button group"
+          size="medium"
+          onClick={onReadyHandler}
+        >
+          ready
+        </Button>
+      </ButtonContainer>
     </Container>
   );
 };

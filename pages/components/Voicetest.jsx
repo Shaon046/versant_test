@@ -144,7 +144,7 @@ const VoiceTest = () => {
     speechSynthesis.speak(utterance);
 
     utterance.onend = () => {
-      setIsRecording(true)
+      setIsRecording(true);
       dispatch(setTestStarted(true));
       console.log("recording started");
     };
@@ -228,7 +228,6 @@ const VoiceTest = () => {
     }
   }, [isRecording]);
 
-
   /////stop recording
   useEffect(() => {
     if (timeLeft === 0) {
@@ -245,7 +244,12 @@ const VoiceTest = () => {
       <QuestionConatiner>{question}</QuestionConatiner>
 
       <RecorderContainer>
-        <Timer initialDuration={timer} />
+        <Timer
+          initialDuration={timer}
+          height={"50px"}
+          width={"180px"}
+          fontsize={"30px"}
+        />
         {/* {!isRecording ? (
           <Button
             variant="contained"

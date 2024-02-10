@@ -8,20 +8,20 @@ const TimerDiv = styled.div`
   display: flex;
   align-items: center;
   justify-content: center;
-  height: 70px;
+  height: ${({ height }) => height};
+  width: ${({ width }) => width};
 
   font-weight: 600;
-  font-size: 30px;
+  font-size: ${({ fontsize }) => fontsize};
   color: ${({ timeLeft }) =>
     timeLeft < 3 ? "#ff3a62" : timeLeft < 10 ? "gray" : "#27a909"};
-  width: 180px;
   border: 1px solid
     ${({ timeLeft }) =>
       timeLeft < 3 ? "#ff3a62" : timeLeft < 10 ? "gray" : "#27a909"};
   border-radius: 40px;
 `;
 
-const Timer = ({ initialDuration }) => {
+const Timer = ({ initialDuration, height, width, fontsize }) => {
   const dispatch = useDispatch();
 
   const testStarted = useSelector((state) => state.test.testStarted);
@@ -50,7 +50,12 @@ const Timer = ({ initialDuration }) => {
   };
 
   return (
-    <TimerDiv timeLeft={timeLeft}>
+    <TimerDiv
+      timeLeft={timeLeft}
+      height={height}
+      width={width}
+      fontsize={fontsize}
+    >
       {timeLeft >= 0 ? (
         formatTime(timeLeft)
       ) : (

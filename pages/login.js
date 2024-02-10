@@ -7,7 +7,7 @@ import {
   InputAdornment,
   FormHelperText,
 } from "@mui/material";
-import PrimaryButton from "./components/PrimaryButton";
+import { Button } from "@mui/material";
 import { Visibility, VisibilityOff } from "@mui/icons-material";
 import { useDispatch } from "react-redux";
 import { setAuth } from "../redux/authSlice";
@@ -198,7 +198,14 @@ const Main = () => {
           )}
         </FormGroup>
 
-        <PrimaryButton onClick={onLoginHandler}>Login</PrimaryButton>
+        <Button
+          variant="contained"
+          aria-label="outlined primary button group"
+          size="medium"
+          onClick={() => onLoginHandler()}
+        >
+          Login
+        </Button>
       </FormContainer>
     </MainContainer>
   );

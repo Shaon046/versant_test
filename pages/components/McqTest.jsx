@@ -7,25 +7,34 @@ import FormLabel from "@mui/material/FormLabel";
 import styled from "styled-components";
 import Pagination from "@mui/material/Pagination";
 import Stack from "@mui/material/Stack";
-import PrimaryButton from "./PrimaryButton";
 import Timer from "./Timer";
 import { data } from "../../dummyQuestion.js";
+import { ButtonGroup, Button } from "@mui/material";
+
+const MainBody = styled.div`
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+`;
+
+const TimerContainer = styled.div`
+  margin-top: 4px;
+`;
 
 const MainContainer = styled.div`
   max-width: 650px;
-  margin: 20px auto;
+  margin: 4px auto;
   background: #7e7a7a;
   border: 1px solid var(--main-border-color);
   background-color: var(--main-primary-color);
   border-radius: 4px;
 
   @media (max-width: 767px) {
-    margin-top: 40px;
     max-width: 400px;
   }
 
   @media (min-width: 768px) {
-    margin-top: 40px;
     max-width: 600px;
   }
 
@@ -48,6 +57,8 @@ const QuestionConatiner = styled.p`
 `;
 
 const OptionsConatiner = styled.p`
+  display: flex;
+  flex-direction: column;
   text-align: left;
   margin-top: 20px;
   padding: 0 0 0 10px;
@@ -70,113 +81,105 @@ const PaginationContainer = styled.div`
   margin-bottom: 5px;
 `;
 
-const TimerContainer = styled.div`
-  position: absolute;
-  @media (max-width: 767px) {
-    position: absolute;
-
-    left: 50%;
-    transform: translate(-50%, -100%);
-  }
-
-  @media (min-width: 768px) {
-    position: absolute;
-    left: 50%;
-    transform: translate(-50%, -100%);
-  }
-  @media (min-width: 1200px) {
-    left: 85%;
-  }
+const ButtonContainer = styled.div`
+  display: flex;
+  justify-content: space-around;
+  margin-top: 10px;
 `;
 
-const dummylist = [
-  {
-    question:
-      "1. Loasrem ipsum dolor sit, amet consectetur adipisicing elit. Ipsum, amet.",
-    options: [
-      " Lorem ipsum dolor sit amet consectesdfsdftur adipisicing elit. Enim, magnam.",
-      "Lorem ipsum dolor sit, amet consectetsdfur adipsdfsdfisicing elit. Ipsum, amet.",
-      " Lorem ipsum dolor, sit amet consectetur adisdfsdfpisicing elit. Quisquam, quasi!",
-      "  Lorem ipsum dolor, sit amet consectetur adipisicing elit. dfsdfEt, sint.",
-      "  Lorem ipsum dolor, sit amet consectetur adipisicing elit. Et,sds sint.",
-    ],
-  },
-  // ,{
-  //   question:
-  //     "1. Loasrem ipsum dolor sit, amet consectetur adipisicing elit. Ipsum, amet.",
-  //   options: [
-  //     " Lorem ipsum dolor sit amet consectesdfsdftur adipisicing elit. Enim, magnam.",
-  //     "Lorem ipsum dolor sit, amet consectetsdfur adipsdfsdfisicing elit. Ipsum, amet.",
-  //     " Lorem ipsum dolor, sit amet consectetur adisdfsdfpisicing elit. Quisquam, quasi!",
-  //     "  Lorem ipsum dolor, sit amet consectetur adipisicing elit. dfsdfEt, sint.",
-  //     "  Lorem ipsum dolor, sit amet consectetur adipisicing elit. Et,sds sint.",
-  //   ],
-  // },
-];
-
 const McqTest = () => {
-  const [question, setQuestion] = useState(dummylist);
+  const [question, setQuestion] = useState(data);
   const [timer, setTimer] = useState(120); //// number of question * 60sec
+
   const [pageCount, setPageCount] = useState();
-  const [currentPage, setCurrentPage] = useState();
+  const [currentPage, setCurrentPage] = useState(1);
+  const [currentIndex, setCurrentIndex] = useState(0);
 
   useEffect(() => {
     setPageCount(question.length);
   }, []);
 
+  ////handler functions
   const onClickNextHandler = () => {
+    setCurrentIndex((prev) => prev + 1);
+
     console.log("calling");
   };
+
+  const onClickPreviousHandler = () => {
+    setCurrentIndex((prev) => prev - 1);
+
+    console.log("calling");
+  };
+
+  useEffect(() => {
+    setCurrentPage(currentIndex + 1);
+  }, [currentIndex]);
 
   const OnSelectHandler = (eve) => {
     console.log(eve);
   };
 
   return (
-    <>
+    <MainBody>
+      <TimerContainer>
+        <Timer
+          initialDuration={timer}
+          height={"30px"}
+          width={"150px"}
+          fontsize={"16px"}
+        />
+      </TimerContainer>
+
       <MainContainer>
-        <TimerContainer>
-          <Timer initialDuration={timer} />
-        </TimerContainer>
+        <>
+          <QuestionConatiner>
+            {question[currentIndex].question}
+          </QuestionConatiner>
 
-        <RadioGroup
-          aria-labelledby="demo-radio-buttons-group-label"
-          name="radio-buttons-group"
-        >
-          {question.map((data, idx) => (
-            <>
-              <QuestionConatiner key={idx}>{data.question}</QuestionConatiner>
+          <RadioGroup
+            aria-labelledby="demo-radio-buttons-group-label"
+            name="radio-buttons-group"
+          >
+            <OptionsConatiner>
+              {question[currentIndex].options.map((data, idx) => (
+                <>
+                  <FormControlLabel
+                    key={idx + "lhe"}
+                    value={data}
+                    control={<Radio />}
+                    label={data}
+                    onClick={(eve) => {
+                      OnSelectHandler(eve);
+                    }}
+                  />
+                </>
+              ))}
+            </OptionsConatiner>{" "}
+          </RadioGroup>
+        </>
 
-              <OptionsConatiner key={idx + "lhe"}>
-                {data.options.map((data, idx) => (
-                  <>
-                    <FormControlLabel
-                      key={idx + "lhe"}
-                      value={data}
-                      control={<Radio />}
-                      label={data}
-                      onClick={(eve) => {
-                        OnSelectHandler(eve);
-                      }}
-                    />
-                  </>
-                ))}
-              </OptionsConatiner>
-            </>
-          ))}
-        </RadioGroup>
-
-        <div style={{ padding: "20px" }}>
-          <PrimaryButton onClick={onClickNextHandler}>{"next"}</PrimaryButton>
-        </div>
+        <ButtonContainer>
+          {" "}
+          <ButtonGroup
+            variant="contained"
+            aria-label="Basic button group"
+            size="small"
+          >
+            <Button onClick={() => onClickPreviousHandler()}>
+              {"previous"}
+            </Button>
+            <Button onClick={onClickNextHandler}>{"next"}</Button>
+          </ButtonGroup>
+        </ButtonContainer>
 
         <PaginationContainer>
           <Stack spacing={2}>
-            <Pagination count={pageCount} />
+            <Pagination count={pageCount} page={currentPage} />
           </Stack>
         </PaginationContainer>
       </MainContainer>
-    </>
+    </MainBody>
   );
 };
 
