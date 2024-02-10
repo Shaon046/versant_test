@@ -144,7 +144,6 @@ const VoiceTest = () => {
     speechSynthesis.speak(utterance);
 
     utterance.onend = () => {
-     // handleStartRecording();
       setIsRecording(true)
       dispatch(setTestStarted(true));
       console.log("recording started");
@@ -229,11 +228,6 @@ const VoiceTest = () => {
     }
   }, [isRecording]);
 
-  const handleStartRecording = () => {
-    setIsRecording(true);
-  };
-
- 
 
   /////stop recording
   useEffect(() => {

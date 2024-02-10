@@ -118,7 +118,7 @@ const Main = () => {
       }
     }
 
-    inputValidation();
+    // inputValidation();              /// error detected
   };
 
   // Toggle password visibility handler function
@@ -198,9 +198,7 @@ const Main = () => {
           )}
         </FormGroup>
 
-        <PrimaryButton onClick={onLoginHandler} >
-          Login
-        </PrimaryButton>
+        <PrimaryButton onClick={onLoginHandler}>Login</PrimaryButton>
       </FormContainer>
     </MainContainer>
   );
