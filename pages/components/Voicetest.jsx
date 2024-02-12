@@ -11,14 +11,16 @@ import SettingsVoiceIcon from "@mui/icons-material/SettingsVoice";
 
 const MainContainer = styled.div`
   max-width: 650px;
-
+  min-height: 200px;
   margin: 20px auto;
-  background: #6f0000;
   border: 1px solid var(--main-border-color);
   background-color: var(--main-primary-color);
+
   border-radius: 4px;
   overflow: hidden;
   box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
+  transition: height 4s;
+
   @media (max-width: 767px) {
     margin-top: 40px;
     max-width: 400px;
@@ -120,6 +122,17 @@ const ZoomIcon = styled(SettingsVoiceIcon)`
   }
 `;
 
+const CompletionMessage = styled.div`
+  display: flex;
+  justify-content: center;
+  align-items: center;
+
+  height: 200px;
+  color: gray;
+  font-size: larger;
+  font-weight: 600;
+`;
+
 const VoiceTest = () => {
   const dispatch = useDispatch();
 
@@ -127,10 +140,12 @@ const VoiceTest = () => {
   const [question, setQuestion] = useState(texts);
 
   const [stoped, setStoped] = useState(false);
-  const [timer, setTimer] = useState(15);
+  const [timer, setTimer] = useState(5);
 
   const [isRecording, setIsRecording] = useState(false);
   const [audio, setAudio] = useState(null);
+
+  const [testEnd, setTestEnd] = useState(false);
 
   const mediaRecorder = useRef(null);
   const chunks = useRef([]);
@@ -196,6 +211,7 @@ const VoiceTest = () => {
 
               if (base64 !== null || "") {
                 addDataToDb(base64);
+                setTestEnd(true);
               }
               setAudio(reader.result); ///for testing
             };
@@ -240,16 +256,18 @@ const VoiceTest = () => {
 
   return (
     <MainContainer>
-      <QuestionConatiner>{question}</QuestionConatiner>
+      {!testEnd && (
+        <>
+          <QuestionConatiner>{question}</QuestionConatiner>
 
-      <RecorderContainer>
-        <Timer
-          initialDuration={timer}
-          height={"50px"}
-          width={"180px"}
-          fontsize={"30px"}
-        />
-        {/* {!isRecording ? (
+          <RecorderContainer>
+            <Timer
+              initialDuration={timer}
+              height={"50px"}
+              width={"180px"}
+              fontsize={"30px"}
+            />
+            {/* {!isRecording ? (
           <Button
             variant="contained"
             href="#contained-buttons"
@@ -281,33 +299,41 @@ const VoiceTest = () => {
           </Button>
         )} */}
 
-        {/* {<audio controls src={audio}></audio>} */}
+            {/* {<audio controls src={audio}></audio>} */}
 
-        {!isRecording && (
-          <>
-            <LogoContainer started={isRecording}>
-              <ZoomIcon style={{ color: "gray", fontSize: "35px" }} />
-            </LogoContainer>
-          </>
-        )}
+            {!isRecording && (
+              <>
+                <LogoContainer started={isRecording}>
+                  <ZoomIcon style={{ color: "gray", fontSize: "35px" }} />
+                </LogoContainer>
+              </>
+            )}
 
-        {isRecording && (
-          <>
-            <LogoContainer>
-              <LogoContainer started={isRecording}>
-                <ZoomIcon
-                  style={{ color: "red", fontSize: "35px" }}
-                  className="zoom"
-                />
-              </LogoContainer>
-            </LogoContainer>
-          </>
-        )}
-      </RecorderContainer>
-      {isRecording && (
-        <StyledWaves>
-          <Waves />
-        </StyledWaves>
+            {isRecording && (
+              <>
+                <LogoContainer>
+                  <LogoContainer started={isRecording}>
+                    <ZoomIcon
+                      style={{ color: "red", fontSize: "35px" }}
+                      className="zoom"
+                    />
+                  </LogoContainer>
+                </LogoContainer>
+              </>
+            )}
+          </RecorderContainer>
+          {isRecording && (
+            <StyledWaves>
+              <Waves />
+            </StyledWaves>
+          )}
+        </>
+      )}
+      {testEnd && (
+        <CompletionMessage>
+          {" "}
+          <p>Your scored will be shared with your interviewer</p>
+        </CompletionMessage>
       )}
     </MainContainer>
   );

@@ -168,12 +168,12 @@ const McqTest = () => {
           <ButtonGroup
             variant="contained"
             aria-label="Basic button group"
-            size="small"
+            style={{height:"25px" }}
           >
-            <Button onClick={() => onClickPreviousHandler()}>
+            {/* <Button onClick={() => onClickPreviousHandler()} style={{width:"90px" ,fontSize:"12px"}} >
               {"previous"}
-            </Button>
-            <Button onClick={onClickNextHandler}>{"next"}</Button>
+            </Button> */}
+            <Button onClick={onClickNextHandler} style={{width:"90px" ,fontSize:"12px"}}>{"next"}</Button>
           </ButtonGroup>
         </ButtonContainer>
 
