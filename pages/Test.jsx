@@ -14,20 +14,20 @@ const MainContainer = styled.div`
 
 const Test = () => {
   //hooks
-  const started = useSelector((state) => state.test.started);
+  const{ started,mcqTestEnded} = useSelector((state) => state.test);
 
   return (
     <>
       <MainContainer>
         <NavBar />
 
-        {/* {!started && <StartTest />}
-
-        {started && <McqTest />} */}
-
         {!started && <StartTest />}
 
-        {started && <VoiceTest />}
+         {started && !mcqTestEnded&& <McqTest />}
+
+        {started && mcqTestEnded&& <VoiceTest />} 
+
+        
       </MainContainer>
     </>
   );

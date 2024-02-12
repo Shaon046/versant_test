@@ -11,6 +11,10 @@ import Timer from "./Timer";
 import { data } from "../../dummyQuestion.js";
 import { ButtonGroup, Button } from "@mui/material";
 
+import { useSelector } from "react-redux";
+import { useDispatch } from "react-redux";
+import { setTestStarted,setMcqTestEnded} from "../../redux/testSlice";
+
 const MainBody = styled.div`
   display: flex;
   flex-direction: column;
@@ -88,8 +92,15 @@ const ButtonContainer = styled.div`
 `;
 
 const McqTest = () => {
+////hooks
+const dispatch = useDispatch()
+
+//// useSelector
+ const { timeLeft } = useSelector((state) => state.test);
+
+
   const [question, setQuestion] = useState(data);
-  const [timer, setTimer] = useState(120); //// number of question * 60sec
+  const [timer, setTimer] = useState(5); //// number of question * 60sec
 
   const [pageCount, setPageCount] = useState();
   const [currentPage, setCurrentPage] = useState(1);
@@ -97,6 +108,8 @@ const McqTest = () => {
 
   useEffect(() => {
     setPageCount(question.length);
+     dispatch(setTestStarted(true))
+
   }, []);
 
   ////handler functions
@@ -123,6 +136,16 @@ const McqTest = () => {
   const OnSelectHandler = (eve) => {
     console.log(eve);
   };
+
+//// it will help to redirect to voice test
+if(timeLeft===0){
+  dispatch(setTestStarted(false))
+dispatch(setMcqTestEnded(true))
+}
+
+
+
+
 
   return (
     <MainBody>
