@@ -4,8 +4,8 @@ const initialState = {
   started: false,
   ended: false,
   timeLeft: null,
-  testStarted:false,
-  mcqTestEnded:false,
+  testStarted: false,
+  mcqTestEnded: false,
 };
 
 const testSlice = createSlice({
@@ -22,14 +22,15 @@ const testSlice = createSlice({
       return (state = { ...state, timeLeft: action.payload });
     },
 
-    setTestStarted(state,action){
-        return (state = { ...state, testStarted: action.payload });
+    setTestStarted(state, action) {
+      return (state = { ...state, testStarted: action.payload });
     },
-    setMcqTestEnded(state,action){
-      return (state={...state, mcqTestEnded: action.payload})
-    }
+    setMcqTestEnded(state, action) {
+      return (state = { ...state, mcqTestEnded: action.payload });
+    },
   },
 });
 
-export const { setStart, setEnd, setTimer ,setTestStarted,setMcqTestEnded} = testSlice.actions;
+export const { setStart, setEnd, setTimer, setTestStarted, setMcqTestEnded } =
+  testSlice.actions;
 export const testReducers = testSlice.reducer;

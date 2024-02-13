@@ -1,6 +1,5 @@
 import React, { useState, useEffect, useRef } from "react";
 import styled, { keyframes } from "styled-components";
-import Button from "@mui/material/Button";
 import Timer from "./Timer";
 import { db } from "../../firebaseConfig";
 import { collection, addDoc } from "firebase/firestore";
