@@ -29,6 +29,7 @@ const TimerContainer = styled.div`
 `;
 
 const MainContainer = styled.div`
+  min-width: 540px;
   max-width: 650px;
   margin: 4px auto;
   background: #7e7a7a;
@@ -99,9 +100,11 @@ const McqTest = () => {
 
   //// useSelector
   const { timeLeft } = useSelector((state) => state.test);
+  const { id } = useSelector((state) => state.auth);
 
+  //states
   const [question, setQuestion] = useState(data);
-  const [timer, setTimer] = useState(5000000); //// it should be dynamic
+  const [timer, setTimer] = useState(question.length * 120); //// 2min for each question
 
   const [pageCount, setPageCount] = useState();
   const [currentPage, setCurrentPage] = useState(1);
@@ -167,7 +170,7 @@ const McqTest = () => {
   const addDataToDb = async (data) => {
     dispatch(setMcqTestEnded(true));
     try {
-      const docRef = await addDoc(collection(db, "DUMMY_CANDIDATE"), {
+      const docRef = await addDoc(collection(db, id), {
         mcq: data,
       });
       console.log("data added", docRef.id);
@@ -181,6 +184,7 @@ const McqTest = () => {
   //// Submit handler function
   const onSubmitHandler = () => {
     addDataToDb(userSelectedAnswer);
+    dispatch(setTestStarted(false));
   };
 
   return (
@@ -190,7 +194,7 @@ const McqTest = () => {
           initialDuration={timer}
           height={"30px"}
           width={"150px"}
-          fontsize={"16px"}
+          fontSize={"16px"}
         />
       </TimerContainer>
 

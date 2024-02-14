@@ -12,22 +12,75 @@ const MainContainer = styled.div`
   overflow: hidden;
 `;
 
+const MessageContainer = styled.div`
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-direction: column;
+  height: 100%;
+  color: gray;
+  font-size: 2rem;
+  font-weight: 600;
+
+  @media (max-width: 767px) {
+    font-size: 0.8rem;
+  }
+
+  @media (min-width: 767px) {
+    font-size: 1.5rem;
+  }
+
+  @media (min-width: 1200px) {
+    font-size: 2rem;
+  }
+`;
+const Message = styled.p`
+  transform: translate(0%, -100%);
+  text-align: center;
+`;
+
 const Test = () => {
   //hooks
-  const{ started,mcqTestEnded} = useSelector((state) => state.test);
+  const { confirmTostart, mcqTestEnded, testStarted, voiceTestEnded } =
+    useSelector((state) => state.test);
+  const { isAuth } = useSelector((state) => state.auth);
 
   return (
     <>
       <MainContainer>
         <NavBar />
 
-        {!started && <StartTest />}
+        {isAuth && (
+          <>
+            {!confirmTostart && <StartTest />}
 
-         {started && !mcqTestEnded&& <McqTest />}
+            {!(mcqTestEnded && voiceTestEnded) && (
+              <>
+                {confirmTostart && !mcqTestEnded && <McqTest />}
+                {confirmTostart && mcqTestEnded && <VoiceTest />}{" "}
+              </>
+            )}
 
-        {started && mcqTestEnded&& <VoiceTest />} 
+            {confirmTostart && mcqTestEnded && voiceTestEnded && (
+              <MessageContainer>
+                {" "}
+                <Message>
+                  Your score will be shared with your interviewer
+                </Message>
+                <Message>Best of luck!</Message>
+              </MessageContainer>
+            )}
+          </>
+        )}
 
-        
+        {!isAuth && (
+          <MessageContainer>
+            <Message>
+              Sorry, you do not have permission to access this page. Please
+              contact the administrator for assistance.
+            </Message>
+          </MessageContainer>
+        )}
       </MainContainer>
     </>
   );

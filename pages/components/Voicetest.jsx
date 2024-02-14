@@ -5,7 +5,7 @@ import { db } from "../../firebaseConfig";
 import { collection, addDoc } from "firebase/firestore";
 import { useSelector } from "react-redux";
 import { useDispatch } from "react-redux";
-import { setTestStarted } from "../../redux/testSlice";
+import { setTestStarted, setVoiceTestEnded } from "../../redux/testSlice";
 import SettingsVoiceIcon from "@mui/icons-material/SettingsVoice";
 
 const MainContainer = styled.div`
@@ -121,16 +121,7 @@ const ZoomIcon = styled(SettingsVoiceIcon)`
   }
 `;
 
-const CompletionMessage = styled.div`
-  display: flex;
-  justify-content: center;
-  align-items: center;
 
-  height: 200px;
-  color: gray;
-  font-size: larger;
-  font-weight: 600;
-`;
 
 const VoiceTest = () => {
   const dispatch = useDispatch();
@@ -142,15 +133,13 @@ const VoiceTest = () => {
   const [timer, setTimer] = useState(5);
 
   const [isRecording, setIsRecording] = useState(false);
-  const [audio, setAudio] = useState(null);
-
-  const [testEnd, setTestEnd] = useState(false);
-
+ 
   const mediaRecorder = useRef(null);
   const chunks = useRef([]);
 
   // useSelector
   const { timeLeft } = useSelector((state) => state.test);
+  const {id}=useSelector((state)=>state.auth )
 
   console.log(timeLeft);
   const autoSpeechQuestion = () => {
@@ -167,7 +156,7 @@ const VoiceTest = () => {
   //// add data to db
   const addDataToDb = async (data) => {
     try {
-      const docRef = await addDoc(collection(db, "mp3"), {
+      const docRef = await addDoc(collection(db, id), {
         audioFile: data,
       });
       console.log("data added", docRef.id);
@@ -210,9 +199,11 @@ const VoiceTest = () => {
 
               if (base64 !== null || "") {
                 addDataToDb(base64);
-                setTestEnd(true);
+                
+                dispatch(setTestStarted(false));
+                dispatch(setVoiceTestEnded(true));
               }
-              setAudio(reader.result); ///for testing
+             
             };
             chunks.current = [];
           };
@@ -255,7 +246,7 @@ const VoiceTest = () => {
 
   return (
     <MainContainer>
-      {!testEnd && (
+      {
         <>
           <QuestionConatiner>{question}</QuestionConatiner>
 
@@ -266,39 +257,6 @@ const VoiceTest = () => {
               width={"180px"}
               fontsize={"30px"}
             />
-            {/* {!isRecording ? (
-          <Button
-            variant="contained"
-            href="#contained-buttons"
-            style={{
-              borderRadius: "100px",
-              height: "60px",
-              width: "60px",
-              fontSize: "10px",
-            }}
-            onClick={handleStartRecording}
-          >
-            start
-          </Button>
-        ) : (
-          <Button
-            variant="contained"
-            href="#contained-buttons"
-            color="error"
-            style={{
-              borderRadius: "10px",
-              height: "60px",
-              width: "60px",
-              fontSize: "10px",
-            }}
-            onClick={() => handleStopRecording()}
-            disabled={stoped}
-          >
-            stop
-          </Button>
-        )} */}
-
-            {/* {<audio controls src={audio}></audio>} */}
 
             {!isRecording && (
               <>
@@ -327,13 +285,7 @@ const VoiceTest = () => {
             </StyledWaves>
           )}
         </>
-      )}
-      {testEnd && (
-        <CompletionMessage>
-          {" "}
-          <p>Your scored will be shared with your interviewer</p>
-        </CompletionMessage>
-      )}
+      }
     </MainContainer>
   );
 };

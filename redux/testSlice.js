@@ -1,10 +1,14 @@
 import { createSlice } from "@reduxjs/toolkit";
 
 const initialState = {
-  started: false,
+  confirmTostart: false,
   ended: false,
+
   timeLeft: null,
+
   testStarted: false,
+
+  voiceTestEnded:false,
   mcqTestEnded: false,
 };
 
@@ -12,8 +16,8 @@ const testSlice = createSlice({
   name: "test",
   initialState: initialState,
   reducers: {
-    setStart(state, action) {
-      return (state = { ...state, started: true });
+    setConfirmTostart(state, action) {
+      return (state = { ...state,  confirmTostart: true });
     },
     setEnd(state, action) {
       return (state = { ...state, ended: true });
@@ -28,9 +32,13 @@ const testSlice = createSlice({
     setMcqTestEnded(state, action) {
       return (state = { ...state, mcqTestEnded: action.payload });
     },
+
+    setVoiceTestEnded(state, action) {
+      return (state = { ...state, voiceTestEnded: action.payload });
+    },
   },
 });
 
-export const { setStart, setEnd, setTimer, setTestStarted, setMcqTestEnded } =
+export const { setConfirmTostart, setEnd, setTimer, setTestStarted, setMcqTestEnded ,setVoiceTestEnded} =
   testSlice.actions;
 export const testReducers = testSlice.reducer;

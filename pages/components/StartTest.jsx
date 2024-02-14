@@ -1,8 +1,9 @@
-import React from "react";
+import React, { useState, useEffect } from "react";
 import styled from "styled-components";
-import { useDispatch, useSelector } from "react-redux";
+import { useDispatch } from "react-redux";
 import { Button } from "@mui/material";
-import { setStart } from "../../redux/testSlice";
+import { setConfirmTostart } from "../../redux/testSlice";
+
 const Container = styled.div`
   display: flex;
   flex-direction: column;
@@ -32,39 +33,87 @@ const ButtonContainer = styled.div`
   margin-top: 10px;
 `;
 
-const StartTest = () => {
-  //hooks
-  const dispatch = useDispatch();
+const LoadingContainer = styled.div`
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.5);
+`;
 
+const CountdownText = styled.h1`
+  border: 3px solid white;
+  border-radius: 60px;
+  height: 7rem;
+  width: 7rem;
+  font-size: 5rem;
+  color: white;
+  text-align: center;
+  transform: translate(0, -50%);
+`;
+
+const StartTest = () => {
+  // Hooks
+  const dispatch = useDispatch();
+  const [loading, setLoading] = useState(false);
+  const [count, setCount] = useState(3);
+
+  // Handler for start button click
   const onReadyHandler = () => {
-    dispatch(setStart());
-    console.log("CLICKED");
+    setLoading(true);
+    setTimeout(() => {
+      setLoading(false);
+      dispatch(setConfirmTostart());
+      console.log("CLICKED");
+    }, count * 1000);
   };
+
+  // Countdown effect
+  useEffect(() => {
+    let timer;
+    if (loading && count > 0) {
+      timer = setTimeout(() => {
+        setCount(count - 1);
+      }, 1000);
+    }
+
+    return () => clearTimeout(timer);
+  }, [count, loading]);
 
   return (
     <Container>
-      <MessageOne>
-        {
-          " Get ready to challenge your knowledge with our MCQ Test. This test is designed to evaluate your understanding of given topic through a series of multiple-choice questions. Put your thinking cap on and prepare to showcase your skills!"
-        }
-      </MessageOne>
+      {!loading && (
+        <>
+          <MessageOne>
+            {
+              " Get ready to challenge your knowledge with our MCQ Test. This test is designed to evaluate your understanding of given topic through a series of multiple-choice questions. Put your thinking cap on and prepare to showcase your skills!"
+            }
+          </MessageOne>
 
-      <MessageTwo>
-        {
-          "When you're ready to begin, click the Start button below to dive into the questions and demonstrate your expertise. Let's get started!"
-        }
-      </MessageTwo>
+          <MessageTwo>
+            {
+              "When you're ready to begin, click the Start button below to dive into the questions and demonstrate your expertise. Let's get started!"
+            }
+          </MessageTwo>
 
-      <ButtonContainer>
-        <Button
-          variant="contained"
-          aria-label="outlined primary button group"
-          size="medium"
-          onClick={onReadyHandler}
-        >
-          ready
-        </Button>
-      </ButtonContainer>
+          <ButtonContainer>
+            <Button
+              variant="contained"
+              aria-label="outlined primary button group"
+              size="medium"
+              onClick={onReadyHandler}
+            >
+              Ready
+            </Button>
+          </ButtonContainer>
+        </>
+      )}
+
+      {loading && (
+        <LoadingContainer>
+          <CountdownText>{count}</CountdownText>
+        </LoadingContainer>
+      )}
     </Container>
   );
 };

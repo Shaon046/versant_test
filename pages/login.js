@@ -9,8 +9,9 @@ import {
 import { Button } from "@mui/material";
 
 import { useDispatch } from "react-redux";
-import { setAuth } from "../redux/authSlice";
+import { setAuth,setId } from "../redux/authSlice";
 import { useRouter } from "next/router";
+import { useState } from "react";
 
 const MainContainer = styled.div`
   height: 100vh;
@@ -37,12 +38,29 @@ const Main = () => {
   //Hooks
   const dispatch = useDispatch();
   const router = useRouter();
+  const [tempId, setTempId] = useState(""); 
 
+
+
+const onChangeTempIdHandler= (eve)=>{
+let tempId=eve.target.value
+setTempId(tempId)
+}
+
+
+//////write authentication logic here 
   const onLoginHandler = () => {
+    if (!tempId) {
+      alert("Please fill in the Temp Id field.");
+      return; 
+    }
+    dispatch(setId(tempId))
     dispatch(setAuth(true));
-
-    router.push("/Test");
+router.push("/Test");
   };
+
+
+
 
   return (
     <MainContainer>
@@ -55,6 +73,7 @@ const Main = () => {
             variant="filled"
             sx={{ m: 1, width: "335px" }}
             required
+            onChange={(eve)=>onChangeTempIdHandler(eve)}
           />
         </FormGroup>
 
