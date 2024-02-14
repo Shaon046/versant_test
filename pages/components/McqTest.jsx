@@ -7,7 +7,12 @@ import Pagination from "@mui/material/Pagination";
 import Stack from "@mui/material/Stack";
 import Timer from "./Timer";
 import { data } from "../../dummyQuestion.js";
-import { ButtonGroup, Button } from "@mui/material";
+import { Button } from "@mui/material";
+import Checkbox from "@mui/material/Checkbox";
+import GolfCourseIcon from "@mui/icons-material/GolfCourse";
+import ArrowForwardIosRoundedIcon from "@mui/icons-material/ArrowForwardIosRounded";
+import ArrowBackIosRoundedIcon from "@mui/icons-material/ArrowBackIosRounded";
+import FormGroup from "@mui/material/FormGroup";
 
 import { useSelector } from "react-redux";
 import { useDispatch } from "react-redux";
@@ -18,27 +23,25 @@ import { db } from "../../firebaseConfig";
 import { collection, addDoc } from "firebase/firestore";
 
 const MainBody = styled.div`
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  align-items: center;
+  background: var(--main-gradient-white);
+  height: 100vh;
 `;
 
 const TimerContainer = styled.div`
-  margin-top: 4px;
+  display: flex;
+  justify-content: center;
 `;
 
 const MainContainer = styled.div`
-  min-width: 540px;
-  max-width: 650px;
+  width: 650px;
   margin: 4px auto;
   background: #7e7a7a;
   border: 1px solid var(--main-border-color);
   background-color: var(--main-primary-color);
-  border-radius: 4px;
+  border-radius: 6px;
 
   @media (max-width: 767px) {
-    max-width: 400px;
+    max-width: 300px;
   }
 
   @media (min-width: 768px) {
@@ -56,7 +59,7 @@ const QuestionConatiner = styled.p`
   font-size: 1.2rem;
   background-color: var(--main-border-color);
   width: 100%;
-
+  border-radius: 6px 6px 0 0;
   @media (max-width: 767px) {
     padding: 15px 0 15px 0;
     font-size: 0.9rem;
@@ -94,7 +97,6 @@ const ButtonContainer = styled.div`
   margin-top: 10px;
 `;
 
-
 const TextContainer = styled.div`
   display: flex;
   flex-direction: column;
@@ -104,46 +106,40 @@ const TextContainer = styled.div`
   background-color: rgba(0, 0, 0, 0.5);
 `;
 
-const Text=styled.div`
-  
+const Text = styled.div`
   font-size: 1.2rem;
   font-weight: 600;
   color: white;
   text-align: center;
-  transform: translate(0,-100%);
-
+  transform: translate(0, -100%);
 
   @media (max-width: 767px) {
     font-size: 0.9rem;
-}
+  }
 
-@media (min-width: 767px)  {
-  font-size: 1rem;
-}
+  @media (min-width: 767px) {
+    font-size: 1rem;
+  }
 
-
-@media (min-width: 1200px) {
-  font-size: 1.2rem;
-}
-  
-`
+  @media (min-width: 1200px) {
+    font-size: 1.2rem;
+  }
+`;
 
 const CountdownText = styled.div`
-display: flex;
-justify-content: center;
-align-items: center;
-  border: 8px solid  #e0c1c1;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  border: 8px solid #e0c1c1;
   border-radius: 60px;
   height: 7rem;
   width: 7rem;
   font-size: 1.5rem;
-  font-weight:600;
+  font-weight: 600;
   color: #ffffff;
   text-align: center;
-  
-;
 `;
-
+const label = { inputProps: { "aria-label": "Checkbox demo" } };
 
 const McqTest = () => {
   ////hooks
@@ -155,7 +151,7 @@ const McqTest = () => {
 
   //states
   const [question, setQuestion] = useState(data);
-  const [timer, setTimer] = useState(120* question.length); //// 2min for each question
+  const [timer, setTimer] = useState(120 * question.length); //// 2min for each question
 
   const [pageCount, setPageCount] = useState();
   const [currentPage, setCurrentPage] = useState(1);
@@ -164,48 +160,33 @@ const McqTest = () => {
   // selected answers for each question
   const [userSelectedAnswer, setUserSelectedAnswer] = useState([]);
 
+  ///////Countdown functions
 
+  const [loading, setLoading] = useState(true);
+  const [count, setCount] = useState(5);
 
-/////////////////////////////////////////////////////////
+  setTimeout(() => {
+    setLoading(false);
+  }, count * 1000);
 
-const [loading, setLoading]=useState(true)
-const [count, setCount] = useState(5);
+  useEffect(() => {
+    let timer;
+    if (loading && count > 0) {
+      timer = setTimeout(() => {
+        setCount(count - 1);
+      }, 1000);
+    }
 
-setTimeout(()=>{
-setLoading(false)
-},count*1000)
+    return () => clearTimeout(timer);
+  }, [count, loading]);
 
+  useEffect(() => {
+    if (!loading) {
+      setPageCount(question.length);
+      dispatch(setTestStarted(true));
+    }
+  }, [loading]);
 
-useEffect(() => {
-  let timer;
-  if (loading && count > 0) {
-    timer = setTimeout(() => {
-      setCount(count - 1);
-    }, 1000);
-  }
-
-  return () => clearTimeout(timer);
-}, [count, loading]);
-
-
-
-
-useEffect(()=>{
-  
-  if(!loading){
-
-    setPageCount(question.length);
-    dispatch(setTestStarted(true));
- 
-  }
-    
-},[loading])
-
-/////////////////////////////////////////////////////////
-
-
-
-  
   useEffect(() => {
     setCurrentPage(currentIndex + 1);
   }, [currentIndex]);
@@ -276,94 +257,99 @@ useEffect(()=>{
   };
 
   return (
+    <>
+      {!loading && (
+        <MainBody>
+          <TimerContainer>
+            <Timer
+              initialDuration={timer}
+              height={"30px"}
+              width={"150px"}
+              fontSize={"16px"}
+            />
+          </TimerContainer>
 
-<>
-{
-  !loading &&
-    <MainBody>
-      <TimerContainer>
-        <Timer
-          initialDuration={timer}
-          height={"30px"}
-          width={"150px"}
-          fontSize={"16px"}
-        />
-      </TimerContainer>
+          <MainContainer>
+            <QuestionConatiner>
+              {question[currentIndex].question}
+            </QuestionConatiner>
 
-      <MainContainer>
-        <QuestionConatiner>{question[currentIndex].question}</QuestionConatiner>
-
-        <RadioGroup
-          aria-labelledby="demo-radio-buttons-group-label"
-          name="radio-buttons-group"
-        >
-          <OptionsConatiner>{renderOptions(currentIndex)}</OptionsConatiner>
-        </RadioGroup>
-
-        {
-          <ButtonContainer>
-            <ButtonGroup
-              variant="contained"
-              aria-label="Basic button group"
-              style={{ height: "25px" }}
+            <RadioGroup
+              aria-labelledby="demo-radio-buttons-group-label"
+              name="radio-buttons-group"
             >
+              <OptionsConatiner>{renderOptions(currentIndex)}</OptionsConatiner>
+            </RadioGroup>
+
+            {/* <FormGroup>
+              <FormControlLabel
+                control={<Checkbox defaultChecked />}
+                label="review the question"
+              />
+            </FormGroup> */}
+
+            {
+              <ButtonContainer>
+                {currentPage === question.length ? (
+                  <Button
+                    variant="contained"
+                    onClick={() => onSubmitHandler()}
+                    color="success"
+                    style={{ width: "90px", fontSize: "12px" }}
+                  >
+                    {"Submit"}
+                  </Button>
+                ) : (
+                  <Button
+                    color="primary"
+                    variant="contained"
+                    onClick={() => handleNextPage()}
+                    style={{ width: "90px", fontSize: "12px" }}
+                  >
+                    {"Next"}
+                  </Button>
+                )}
+              </ButtonContainer>
+            }
+
+            <PaginationContainer>
+              {" "}
               <Button
                 onClick={() => handlePreviousPage()}
-                style={{ width: "90px", fontSize: "12px" }}
+                style={{ fontSize: "12px", borderRadius: "100px" }}
               >
-                {"Prev"}
+                {<ArrowBackIosRoundedIcon />}
               </Button>
+              <Stack spacing={2}>
+                <Pagination
+                  count={pageCount}
+                  page={currentPage}
+                  hidePrevButton
+                  hideNextButton
+                />
+              </Stack>
+              <Button
+                onClick={() => handleNextPage()}
+                style={{ fontSize: "12px", borderRadius: "100px" }}
+              >
+                {<ArrowForwardIosRoundedIcon />}
+              </Button>
+            </PaginationContainer>
+          </MainContainer>
+        </MainBody>
+      )}
 
-              {currentPage === question.length ? (
-                <Button
-                  onClick={() => onSubmitHandler()}
-                  color="success"
-                  style={{ width: "90px", fontSize: "12px" }}
-                >
-                  {"Submit"}
-                </Button>
-              ) : (
-                <Button
-                  onClick={() => handleNextPage()}
-                  style={{ width: "90px", fontSize: "12px" }}
-                >
-                  {"Next"}
-                </Button>
-              )}
-            </ButtonGroup>
-          </ButtonContainer>
-        }
-
-        <PaginationContainer>
-          <Stack spacing={2}>
-            <Pagination
-              count={pageCount}
-              page={currentPage}
-              hidePrevButton
-              hideNextButton
-            />
-          </Stack>
-        </PaginationContainer>
-      </MainContainer>
-    </MainBody>
-
-  
-  }
-
-
-{
-
-  loading && 
-  <TextContainer>
-    <Text> MCQ test starting soon! Get ready to answer multiple-choice questions. Stay focused and do your best! Good luck! </Text>
-    <CountdownText>{count}</CountdownText>
-  </TextContainer>
-}
-
-
-
+      {loading && (
+        <TextContainer>
+          <Text>
+            {" "}
+            MCQ test starting soon! Get ready to answer multiple-choice
+            questions. Stay focused and do your best! Good luck!{" "}
+          </Text>
+          <CountdownText>{count}</CountdownText>
+        </TextContainer>
+      )}
     </>
-
   );
 };
 

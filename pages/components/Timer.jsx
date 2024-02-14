@@ -14,10 +14,10 @@ const TimerDiv = styled.div`
   font-weight: 600;
   font-size: ${({ fontsize }) => fontsize};
   color: ${({ timeLeft }) =>
-    timeLeft < 3 ? "#ff3a62" : timeLeft < 10 ? "gray" : "#27a909"};
+    timeLeft < 3 ? "#ff3a62" : timeLeft < 10 ? "gray" : "#c7feba"};
   border: 1px solid
     ${({ timeLeft }) =>
-      timeLeft < 3 ? "#ff3a62" : timeLeft < 10 ? "gray" : "#27a909"};
+      timeLeft < 3 ? "#ff3a62" : timeLeft < 10 ? "gray" : "#c7feba"};
   border-radius: 40px;
 `;
 

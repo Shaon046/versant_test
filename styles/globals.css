@@ -9,4 +9,6 @@
   --main-bg-color: #f4f6f9;
   --main-primary-color: #ffffff;
   --main-border-color: #dbe0e8;
+  --main-gradient:linear-gradient(#1976d2, #9198e5);
+  --main-gradient-white:linear-gradient(#1976d2, #ffffff)
 }

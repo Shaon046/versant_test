@@ -8,8 +8,16 @@ import { useDispatch } from "react-redux";
 import { setTestStarted, setVoiceTestEnded } from "../../redux/testSlice";
 import SettingsVoiceIcon from "@mui/icons-material/SettingsVoice";
 
+const Body=styled.div`
+  height: 100vh;
+  width: 100vh;
+  background-color: #041b2f;
+`
+
+
+
 const MainContainer = styled.div`
-  max-width: 650px;
+  width: 650px;
   min-height: 200px;
   margin: 20px auto;
   border: 1px solid var(--main-border-color);
@@ -22,7 +30,7 @@ const MainContainer = styled.div`
 
   @media (max-width: 767px) {
     margin-top: 40px;
-    max-width: 400px;
+    max-width: 300px;
   }
 
   @media (min-width: 768px) {
@@ -31,7 +39,7 @@ const MainContainer = styled.div`
   }
 
   @media (min-width: 1200px) {
-    max-width: 650px;
+width: 650px;
   }
 `;
 
@@ -171,7 +179,7 @@ const VoiceTest = () => {
   const [question, setQuestion] = useState(texts);
 
   // const [stoped, setStoped] = useState(false); //forgot where did i use it
-  const [timer, setTimer] = useState(5);
+  const [timer, setTimer] = useState(15);
 
   const [isRecording, setIsRecording] = useState(false);
 
@@ -308,6 +316,7 @@ const VoiceTest = () => {
   return (
     <>
       {!loading && (
+        
         <MainContainer>
           <QuestionConatiner>{question}</QuestionConatiner>
 

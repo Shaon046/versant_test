@@ -18,7 +18,7 @@ const MainContainer = styled.div`
   display: flex;
   align-items: center;
   justify-content: center;
-  background-color: var(--main-bg-color);
+ background: var( --main-gradient-white);
 `;
 
 const FormContainer = styled.div`
@@ -30,7 +30,7 @@ const FormContainer = styled.div`
   height: 330px;
   width: 380px;
   border: 1px solid var(--main-border-color);
-
+border-radius: 6px;
   background-color: var(--main-primary-color);
 `;
 

@@ -10,7 +10,7 @@ const Container = styled.div`
   justify-content: center;
   height: 100%;
   width: 100%;
-  background-color: #c7d7e4;
+  background: var(--main-gradient-white);
 `;
 
 const MessageOne = styled.p`
@@ -33,24 +33,7 @@ const ButtonContainer = styled.div`
   margin-top: 10px;
 `;
 
-const CountdownContainer = styled.div`
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  height: 100%;
-  background-color: rgba(0, 0, 0, 0.5);
-`;
 
-const CountdownText = styled.h1`
-  border: 3px solid white;
-  border-radius: 60px;
-  height: 7rem;
-  width: 7rem;
-  font-size: 5rem;
-  color: white;
-  text-align: center;
-  transform: translate(0, -50%);
-`;
 
 const StartTest = () => {
   // Hooks
