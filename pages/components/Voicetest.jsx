@@ -121,7 +121,48 @@ const ZoomIcon = styled(SettingsVoiceIcon)`
   }
 `;
 
+const CountdownContainer = styled.div`
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.5);
+`;
 
+const Text = styled.div`
+  font-size: 1.2rem;
+  font-weight: 600;
+  color: white;
+  text-align: center;
+  transform: translate(0, -100%);
+
+  @media (max-width: 767px) {
+    font-size: 0.9rem;
+  }
+
+  @media (min-width: 767px) {
+    font-size: 1rem;
+  }
+
+  @media (min-width: 1200px) {
+    font-size: 1.2rem;
+  }
+`;
+
+const CountdownText = styled.div`
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  border: 8px solid #e0c1c1;
+  border-radius: 60px;
+  height: 7rem;
+  width: 7rem;
+  font-size: 1.5rem;
+  font-weight: 600;
+  color: #ffffff;
+  text-align: center;
+`;
 
 const VoiceTest = () => {
   const dispatch = useDispatch();
@@ -129,29 +170,55 @@ const VoiceTest = () => {
   const texts = " what is JavaScript and why should we use it ? ";
   const [question, setQuestion] = useState(texts);
 
-  const [stoped, setStoped] = useState(false);
+  // const [stoped, setStoped] = useState(false); //forgot where did i use it
   const [timer, setTimer] = useState(5);
 
   const [isRecording, setIsRecording] = useState(false);
- 
+
   const mediaRecorder = useRef(null);
   const chunks = useRef([]);
 
+  const [loading, setLoading] = useState(true);
+  const [count, setCount] = useState(5);
+
   // useSelector
   const { timeLeft } = useSelector((state) => state.test);
-  const {id}=useSelector((state)=>state.auth )
+  const { id } = useSelector((state) => state.auth);
 
-  console.log(timeLeft);
-  const autoSpeechQuestion = () => {
-    const utterance = new SpeechSynthesisUtterance(question);
-    speechSynthesis.speak(utterance);
+  //////show count before star
+  setTimeout(() => {
+    setLoading(false);
+  }, count * 1000);
 
-    utterance.onend = () => {
-      setIsRecording(true);
-      dispatch(setTestStarted(true));
-      console.log("recording started");
+  useEffect(() => {
+    let timer;
+    if (loading && count > 0) {
+      timer = setTimeout(() => {
+        setCount(count - 1);
+      }, 1000);
+    }
+
+    return () => clearTimeout(timer);
+  }, [count, loading]);
+
+  //////show count before star
+
+  useEffect(() => {
+    const autoSpeechQuestion = () => {
+      if (!loading) {
+        const utterance = new SpeechSynthesisUtterance(question);
+        speechSynthesis.speak(utterance);
+
+        utterance.onend = () => {
+          setIsRecording(true);
+          dispatch(setTestStarted(true));
+          console.log("recording started");
+        };
+      }
     };
-  };
+
+    autoSpeechQuestion();
+  }, [loading]);
 
   //// add data to db
   const addDataToDb = async (data) => {
@@ -166,11 +233,6 @@ const VoiceTest = () => {
       return false;
     }
   };
-
-  ////text to speech question
-  useEffect(() => {
-    autoSpeechQuestion();
-  }, [question]);
 
   ////record media and store to db
   useEffect(() => {
@@ -199,11 +261,10 @@ const VoiceTest = () => {
 
               if (base64 !== null || "") {
                 addDataToDb(base64);
-                
+
                 dispatch(setTestStarted(false));
                 dispatch(setVoiceTestEnded(true));
               }
-             
             };
             chunks.current = [];
           };
@@ -237,7 +298,7 @@ const VoiceTest = () => {
   useEffect(() => {
     if (timeLeft === 0) {
       setTimer(0);
-      setStoped(true);
+      // setStoped(true);
       setIsRecording(false);
     }
   }, [timeLeft]);
@@ -245,9 +306,9 @@ const VoiceTest = () => {
   console.log(timer);
 
   return (
-    <MainContainer>
-      {
-        <>
+    <>
+      {!loading && (
+        <MainContainer>
           <QuestionConatiner>{question}</QuestionConatiner>
 
           <RecorderContainer>
@@ -284,9 +345,19 @@ const VoiceTest = () => {
               <Waves />
             </StyledWaves>
           )}
-        </>
-      }
-    </MainContainer>
+        </MainContainer>
+      )}
+
+      {loading && (
+        <CountdownContainer>
+          <Text>
+            Welcome to the Versant test! stay focused, and be ready. Best of
+            luck in demonstrating your language proficiency!
+          </Text>
+          <CountdownText>{count}</CountdownText>
+        </CountdownContainer>
+      )}
+    </>
   );
 };
 

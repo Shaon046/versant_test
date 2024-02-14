@@ -33,7 +33,7 @@ const ButtonContainer = styled.div`
   margin-top: 10px;
 `;
 
-const LoadingContainer = styled.div`
+const CountdownContainer = styled.div`
   display: flex;
   justify-content: center;
   align-items: center;
@@ -55,34 +55,20 @@ const CountdownText = styled.h1`
 const StartTest = () => {
   // Hooks
   const dispatch = useDispatch();
-  const [loading, setLoading] = useState(false);
-  const [count, setCount] = useState(3);
+ 
 
   // Handler for start button click
   const onReadyHandler = () => {
-    setLoading(true);
-    setTimeout(() => {
-      setLoading(false);
-      dispatch(setConfirmTostart());
+     dispatch(setConfirmTostart());
       console.log("CLICKED");
-    }, count * 1000);
+   
   };
 
-  // Countdown effect
-  useEffect(() => {
-    let timer;
-    if (loading && count > 0) {
-      timer = setTimeout(() => {
-        setCount(count - 1);
-      }, 1000);
-    }
-
-    return () => clearTimeout(timer);
-  }, [count, loading]);
+ 
 
   return (
     <Container>
-      {!loading && (
+       
         <>
           <MessageOne>
             {
@@ -107,13 +93,9 @@ const StartTest = () => {
             </Button>
           </ButtonContainer>
         </>
-      )}
+  
 
-      {loading && (
-        <LoadingContainer>
-          <CountdownText>{count}</CountdownText>
-        </LoadingContainer>
-      )}
+      
     </Container>
   );
 };

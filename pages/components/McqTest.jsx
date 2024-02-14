@@ -94,6 +94,57 @@ const ButtonContainer = styled.div`
   margin-top: 10px;
 `;
 
+
+const TextContainer = styled.div`
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.5);
+`;
+
+const Text=styled.div`
+  
+  font-size: 1.2rem;
+  font-weight: 600;
+  color: white;
+  text-align: center;
+  transform: translate(0,-100%);
+
+
+  @media (max-width: 767px) {
+    font-size: 0.9rem;
+}
+
+@media (min-width: 767px)  {
+  font-size: 1rem;
+}
+
+
+@media (min-width: 1200px) {
+  font-size: 1.2rem;
+}
+  
+`
+
+const CountdownText = styled.div`
+display: flex;
+justify-content: center;
+align-items: center;
+  border: 8px solid  #e0c1c1;
+  border-radius: 60px;
+  height: 7rem;
+  width: 7rem;
+  font-size: 1.5rem;
+  font-weight:600;
+  color: #ffffff;
+  text-align: center;
+  
+;
+`;
+
+
 const McqTest = () => {
   ////hooks
   const dispatch = useDispatch();
@@ -104,7 +155,7 @@ const McqTest = () => {
 
   //states
   const [question, setQuestion] = useState(data);
-  const [timer, setTimer] = useState(question.length * 120); //// 2min for each question
+  const [timer, setTimer] = useState(120* question.length); //// 2min for each question
 
   const [pageCount, setPageCount] = useState();
   const [currentPage, setCurrentPage] = useState(1);
@@ -113,11 +164,48 @@ const McqTest = () => {
   // selected answers for each question
   const [userSelectedAnswer, setUserSelectedAnswer] = useState([]);
 
-  useEffect(() => {
+
+
+/////////////////////////////////////////////////////////
+
+const [loading, setLoading]=useState(true)
+const [count, setCount] = useState(5);
+
+setTimeout(()=>{
+setLoading(false)
+},count*1000)
+
+
+useEffect(() => {
+  let timer;
+  if (loading && count > 0) {
+    timer = setTimeout(() => {
+      setCount(count - 1);
+    }, 1000);
+  }
+
+  return () => clearTimeout(timer);
+}, [count, loading]);
+
+
+
+
+useEffect(()=>{
+  
+  if(!loading){
+
     setPageCount(question.length);
     dispatch(setTestStarted(true));
-  }, []);
+ 
+  }
+    
+},[loading])
 
+/////////////////////////////////////////////////////////
+
+
+
+  
   useEffect(() => {
     setCurrentPage(currentIndex + 1);
   }, [currentIndex]);
@@ -188,6 +276,10 @@ const McqTest = () => {
   };
 
   return (
+
+<>
+{
+  !loading &&
     <MainBody>
       <TimerContainer>
         <Timer
@@ -254,6 +346,24 @@ const McqTest = () => {
         </PaginationContainer>
       </MainContainer>
     </MainBody>
+
+  
+  }
+
+
+{
+
+  loading && 
+  <TextContainer>
+    <Text> MCQ test starting soon! Get ready to answer multiple-choice questions. Stay focused and do your best! Good luck! </Text>
+    <CountdownText>{count}</CountdownText>
+  </TextContainer>
+}
+
+
+
+    </>
+
   );
 };
 
