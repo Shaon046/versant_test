@@ -9,11 +9,11 @@ import Timer from "./Timer";
 import { data } from "../../dummyQuestion.js";
 import { Button } from "@mui/material";
 import Checkbox from "@mui/material/Checkbox";
-import GolfCourseIcon from "@mui/icons-material/GolfCourse";
+import PreviewIcon from "@mui/icons-material/Preview";
 import ArrowForwardIosRoundedIcon from "@mui/icons-material/ArrowForwardIosRounded";
 import ArrowBackIosRoundedIcon from "@mui/icons-material/ArrowBackIosRounded";
-import FormGroup from "@mui/material/FormGroup";
-
+import TourIcon from "@mui/icons-material/Tour";
+import { Typography } from "@mui/material";
 import { useSelector } from "react-redux";
 import { useDispatch } from "react-redux";
 import { setTestStarted, setMcqTestEnded } from "../../redux/testSlice";
@@ -35,11 +35,11 @@ const TimerContainer = styled.div`
 const MainContainer = styled.div`
   width: 650px;
   margin: 4px auto;
-  background: #7e7a7a;
+
   border: 1px solid var(--main-border-color);
   background-color: var(--main-primary-color);
   border-radius: 6px;
-
+  position: relative;
   @media (max-width: 767px) {
     max-width: 300px;
   }
@@ -139,31 +139,49 @@ const CountdownText = styled.div`
   color: #ffffff;
   text-align: center;
 `;
-const label = { inputProps: { "aria-label": "Checkbox demo" } };
+
+const CheckboxContainer = styled.div`
+  position: absolute;
+  bottom: 0;
+`;
+
+const ReviewQuestionContainer = styled.div`
+  width: 90%;
+  height: 80%;
+  margin: auto;
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  grid-template-rows: repeat(3, 200px);
+  overflow: auto; /* Make the container scrollable */
+
+  background-color: #d2cece;
+`;
 
 const McqTest = () => {
-  ////hooks
   const dispatch = useDispatch();
-
   //// useSelector
   const { timeLeft } = useSelector((state) => state.test);
   const { id } = useSelector((state) => state.auth);
 
   //states
   const [question, setQuestion] = useState(data);
-  const [timer, setTimer] = useState(120 * question.length); //// 2min for each question
-
+  const [timer, setTimer] = useState(1200 * question.length); //// 2min for each question
   const [pageCount, setPageCount] = useState();
   const [currentPage, setCurrentPage] = useState(1);
   const [currentIndex, setCurrentIndex] = useState(0);
-
+  const [reviewChecked, setReviewChecked] = useState(false);
   // selected answers for each question
   const [userSelectedAnswer, setUserSelectedAnswer] = useState([]);
-
-  ///////Countdown functions
-
+  const [flagedQuestions, setFlagedQuestions] = useState([]);
   const [loading, setLoading] = useState(true);
   const [count, setCount] = useState(5);
+  const [openReviewPage, setOpenReviewPage] = useState(false);
+
+  ///////Countdown functions
+  useEffect(() => {
+    console.log(flagedQuestions);
+    console.log(userSelectedAnswer);
+  }, [userSelectedAnswer, flagedQuestions]);
 
   setTimeout(() => {
     setLoading(false);
@@ -191,12 +209,15 @@ const McqTest = () => {
     setCurrentPage(currentIndex + 1);
   }, [currentIndex]);
 
+  /////option select handler
   const handleOptionSelect = (questionIndex, optionValue) => {
     setUserSelectedAnswer((prev) => ({
       ...prev,
       [question[questionIndex].question]: optionValue,
     }));
   };
+
+  ///////
 
   // Function to render options for a question
   const renderOptions = (questionIndex) => {
@@ -227,6 +248,17 @@ const McqTest = () => {
     }
   };
 
+  const handleChange = (event) => {
+    const isChecked = event.target.checked;
+    const currentQuestion = question[currentIndex].question;
+
+    setReviewChecked(isChecked);
+    setFlagedQuestions((prev) => ({
+      ...prev,
+      [currentQuestion]: isChecked,
+    }));
+  };
+
   // Check if time is up
   useEffect(() => {
     if (timeLeft === 0) {
@@ -250,15 +282,36 @@ const McqTest = () => {
     }
   };
 
-  //// Submit handler function
+  //// Submit to review handler function
   const onSubmitHandler = () => {
+    setOpenReviewPage((prev) => !prev);
+  };
+
+  ////back from review page
+  const backToTestHandler = () => {
+    setOpenReviewPage((prev) => !prev);
+  };
+
+  ////final submission
+  const onConfirmSubmit = () => {
     addDataToDb(userSelectedAnswer);
     dispatch(setTestStarted(false));
   };
 
   return (
     <>
-      {!loading && (
+      {loading && (
+        <TextContainer>
+          <Text>
+            {" "}
+            MCQ test starting soon! Get ready to answer multiple-choice
+            questions. Stay focused and do your best! Good luck!{" "}
+          </Text>
+          <CountdownText>{count}</CountdownText>
+        </TextContainer>
+      )}
+
+      {!loading && !openReviewPage && (
         <MainBody>
           <TimerContainer>
             <Timer
@@ -281,12 +334,18 @@ const McqTest = () => {
               <OptionsConatiner>{renderOptions(currentIndex)}</OptionsConatiner>
             </RadioGroup>
 
-            {/* <FormGroup>
-              <FormControlLabel
-                control={<Checkbox defaultChecked />}
-                label="review the question"
+            <CheckboxContainer>
+              <Checkbox
+                icon={<TourIcon />}
+                checkedIcon={<TourIcon style={{ color: "red" }} />}
+                checked={
+                  flagedQuestions[[question[currentIndex].question]] === true
+                    ? true
+                    : false
+                }
+                onChange={handleChange}
               />
-            </FormGroup> */}
+            </CheckboxContainer>
 
             {
               <ButtonContainer>
@@ -339,15 +398,40 @@ const McqTest = () => {
         </MainBody>
       )}
 
-      {loading && (
-        <TextContainer>
-          <Text>
-            {" "}
-            MCQ test starting soon! Get ready to answer multiple-choice
-            questions. Stay focused and do your best! Good luck!{" "}
-          </Text>
-          <CountdownText>{count}</CountdownText>
-        </TextContainer>
+      {openReviewPage && (
+        <MainBody>
+          <ReviewQuestionContainer>
+            {question.map((data, idx) => (
+              <div key={idx}>
+                <div>{data.question}</div>
+
+                <div>
+                 
+                  {userSelectedAnswer[data.question]
+                    ? userSelectedAnswer[data.question]
+                    : "Not Selected"}
+                </div>
+                {flagedQuestions[data.question] === true
+                  ? "flaged"
+                  : "not flaged"}
+              </div>
+            ))}
+          </ReviewQuestionContainer>
+
+          <Button
+            color="primary"
+            variant="contained"
+            onClick={() => backToTestHandler()}
+            style={{
+              width: "90px",
+              fontSize: "12px",
+              display: "block",
+              margin: "auto",
+            }}
+          >
+            {"Back"}
+          </Button>
+        </MainBody>
       )}
     </>
   );
