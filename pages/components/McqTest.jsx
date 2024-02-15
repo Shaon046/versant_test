@@ -158,6 +158,20 @@ const ReviewQuestionContainer = styled.div`
   border-radius: 4px;
 `;
 
+const ReviewPageQuestion=styled.div`
+  font-size: 16px;
+  font-weight: 600;
+
+`
+
+const ReviewPageAnswer=styled.div`
+font-size: 16px;
+font-weight: 400;
+margin-top: 6px;
+color: #3b3e3b;
+
+`
+
 const McqTest = () => {
   const dispatch = useDispatch();
   //// useSelector
@@ -403,13 +417,16 @@ const McqTest = () => {
           <ReviewQuestionContainer>
             {question.map((data, idx) => (
               <div key={idx}>
-                <div>{data.question}</div>
+                <ReviewPageQuestion>{data.question}</ReviewPageQuestion>
 
-                <div>
+                <ReviewPageAnswer>
                   {userSelectedAnswer[data.question]
-                    ? userSelectedAnswer[data.question]
-                    : "Not Selected"}
-                </div>
+                    ? <>
+                    <p style={{fontWeight:"600"}}>Selected answer </p>
+                    {userSelectedAnswer[data.question]}
+                  </>
+                    : <p style={{color:"red"}}>Not selected</p>}
+                </ReviewPageAnswer>
                 {flagedQuestions[data.question] === true ? (
                   <TourIcon style={{ color: "red", marginTop: "20px" }} />
                 ) : (
