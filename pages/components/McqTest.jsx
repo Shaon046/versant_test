@@ -153,17 +153,10 @@ const ReviewQuestionContainer = styled.div`
   padding: 10px;
   grid-template-columns: repeat(3, 1fr);
   grid-template-rows: repeat(3, 200px);
-  overflow: auto; 
-background-color: #d2cece;
-border-radius: 4px;
-
+  overflow: auto;
+  background-color: #d2cece;
+  border-radius: 4px;
 `;
-
-
-
-
-
-
 
 const McqTest = () => {
   const dispatch = useDispatch();
@@ -413,31 +406,44 @@ const McqTest = () => {
                 <div>{data.question}</div>
 
                 <div>
-                 
                   {userSelectedAnswer[data.question]
                     ? userSelectedAnswer[data.question]
                     : "Not Selected"}
                 </div>
-                {flagedQuestions[data.question] === true
-                  ? <TourIcon style={{ color: "red",marginTop:"20px" }} />
-                  :''}
+                {flagedQuestions[data.question] === true ? (
+                  <TourIcon style={{ color: "red", marginTop: "20px" }} />
+                ) : (
+                  ""
+                )}
               </div>
             ))}
           </ReviewQuestionContainer>
 
-          <Button
-            color="primary"
-            variant="contained"
-            onClick={() => backToTestHandler()}
-            style={{
-              width: "90px",
-              fontSize: "12px",
-              display: "block",
-              margin: "auto",
-            }}
-          >
-            {"Back"}
-          </Button>
+          <div style={{ display: "flex", justifyContent: "center" }}>
+            <Button
+              color="primary"
+              variant="contained"
+              onClick={() => backToTestHandler()}
+              style={{
+                width: "90px",
+                fontSize: "12px",
+              }}
+            >
+              {"Back"}
+            </Button>
+
+            <Button
+              color="success"
+              variant="contained"
+              onClick={() => onConfirmSubmit()}
+              style={{
+                width: "90px",
+                fontSize: "12px",
+              }}
+            >
+              {"Submit"}
+            </Button>
+          </div>
         </MainBody>
       )}
     </>
