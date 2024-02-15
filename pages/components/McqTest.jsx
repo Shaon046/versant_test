@@ -150,12 +150,20 @@ const ReviewQuestionContainer = styled.div`
   height: 80%;
   margin: auto;
   display: grid;
+  padding: 10px;
   grid-template-columns: repeat(3, 1fr);
   grid-template-rows: repeat(3, 200px);
-  overflow: auto; /* Make the container scrollable */
+  overflow: auto; 
+background-color: #d2cece;
+border-radius: 4px;
 
-  background-color: #d2cece;
 `;
+
+
+
+
+
+
 
 const McqTest = () => {
   const dispatch = useDispatch();
@@ -252,7 +260,6 @@ const McqTest = () => {
     const isChecked = event.target.checked;
     const currentQuestion = question[currentIndex].question;
 
-    setReviewChecked(isChecked);
     setFlagedQuestions((prev) => ({
       ...prev,
       [currentQuestion]: isChecked,
@@ -412,8 +419,8 @@ const McqTest = () => {
                     : "Not Selected"}
                 </div>
                 {flagedQuestions[data.question] === true
-                  ? "flaged"
-                  : "not flaged"}
+                  ? <TourIcon style={{ color: "red",marginTop:"20px" }} />
+                  :''}
               </div>
             ))}
           </ReviewQuestionContainer>
